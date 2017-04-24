@@ -1,0 +1,120 @@
+<head>
+	<style type="text/css">
+	.element{
+		width:100px;
+		height:100px;
+		display:inline-block;
+	}
+
+	.vert{
+		background: #27ae60;
+	}
+
+	.bleu{
+		background: #3498db;
+	}
+
+	.rouge{
+		background: #e74c3c;
+	}
+
+	.orange{
+		background: #f39c12;
+	}
+
+	.selected{
+		opacity: .7;
+	}
+	</style>
+</head>
+
+<h1>Jeu !</h1>
+
+
+<div id="game">
+	
+</div>
+
+<script type="text/javascript">
+	var option = [
+		'bleu',
+		'rouge',
+		'vert',
+		'orange'
+	];
+
+	var actualGame = [];
+
+	var gameSpace = document.getElementById("game");
+
+	var isOneCellSelected = false;
+
+
+	function startGame() {
+		var w = 7;
+		var h = 7;
+
+		for (var i = h - 1; i >= 0; i--) {
+			ligne = document.createElement("div");
+			ligne.setAttribute("id", "ligne"+i);
+
+			var data = "";
+			var actualRow = []
+
+			for (var j = h - 1; j >= 0; j--) {
+
+				// On tire la valeur de la case
+				var valeur = option[Math.floor(Math.random() * option.length)];
+				actualRow.push(valeur);
+
+				data = data+"<div id='cell_"+i+""+j+"' data-pos='"+i+""+j+"' onmousedown='selectElement("+i+""+j+")' class='element "+valeur+"'>"+valeur+"</div>";
+			}
+
+			ligne.innerHTML = data;
+
+			actualGame.push(actualRow);
+			gameSpace.appendChild(ligne);
+		}
+	}
+
+	function selectElement(cellule){
+		console.log("On a cliquer sur la cellule "+cellule);
+
+
+		if (isOneCellSelected == false) {
+			document.getElementById("cell_"+cellule).className += " selected";
+			isOneCellSelected = true;
+		}else{
+
+			var cellulesSelected = document.getElementsByClassName('selected');
+			celluleSelected = parseInt(cellulesSelected[0].attributes["data-pos"].value);
+			movementValid = movementValidation(celluleSelected,cellule);
+
+			var elements = document.getElementsByClassName('element');
+			for (var i = elements.length - 1; i >= 0; i--) {
+				elements[i].classList.remove("selected");
+			}
+			
+			if (movementValid == true) {
+				console.log("ok");
+			}else{
+				isOneCellSelected = false;
+				selectElement(cellule);
+			}
+			//isOneCellSelected = true;
+		}
+		
+	}
+
+	function movementValidation(celluleSelected, cellule) {
+		console.log(celluleSelected);
+		console.log(cellule);
+		if ((celluleSelected == cellule-10) || (celluleSelected == cellule+10) || (celluleSelected == cellule-1) || (celluleSelected == cellule+1)) {
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	startGame();
+</script>
