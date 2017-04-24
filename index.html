@@ -64,10 +64,11 @@
 			for (var j = h - 1; j >= 0; j--) {
 
 				// On tire la valeur de la case
-				var valeur = option[Math.floor(Math.random() * option.length)];
+				var n = Math.floor(Math.random() * option.length);
+				var valeur = option[n];
 				actualRow.push(valeur);
 
-				data = data+"<div id='cell_"+i+""+j+"' data-pos='"+i+""+j+"' onmousedown='selectElement("+i+""+j+")' class='element "+valeur+"'>"+valeur+"</div>";
+				data = data+"<div id='cell_"+i+""+j+"' data-pos='"+i+""+j+"' data-val='"+n+"' onmousedown='selectElement("+i+""+j+")' class='element "+valeur+"'>"+valeur+"<br>ligne : "+i+"<br>cellule : "+j+"<br>"+i+""+j+"</div>";
 			}
 
 			ligne.innerHTML = data;
@@ -88,16 +89,18 @@
 
 			var cellulesSelected = document.getElementsByClassName('selected');
 			celluleSelected = parseInt(cellulesSelected[0].attributes["data-pos"].value);
-			movementValid = movementValidation(celluleSelected,cellule);
+			valCellSelected = parseInt(cellulesSelected[0].attributes["data-val"].value);
+			valCell = parseInt(document.getElementById("cell_"+cellule).attributes["data-val"].value);
 
-			var elements = document.getElementsByClassName('element');
-			for (var i = elements.length - 1; i >= 0; i--) {
-				elements[i].classList.remove("selected");
-			}
+			movementValid = movementValidation(celluleSelected,cellule, valCellSelected, valCell);
 			
 			if (movementValid == true) {
 				console.log("ok");
 			}else{
+				var elements = document.getElementsByClassName('element');
+				for (var i = elements.length - 1; i >= 0; i--) {
+					elements[i].classList.remove("selected");
+				}
 				isOneCellSelected = false;
 				selectElement(cellule);
 			}
@@ -106,10 +109,19 @@
 		
 	}
 
-	function movementValidation(celluleSelected, cellule) {
-		console.log(celluleSelected);
-		console.log(cellule);
-		if ((celluleSelected == cellule-10) || (celluleSelected == cellule+10) || (celluleSelected == cellule-1) || (celluleSelected == cellule+1)) {
+	function movementValidation(celluleSelected, cellule, valCellSelected, valCell) {
+		console.log("La cellule "+celluleSelected+" vaut "+valCellSelected);
+		console.log("La cellule "+cellule+" vaut "+valCell);
+		if(celluleSelected == cellule-10 || celluleSelected == cellule+10){
+			console.log('cas 1');
+			console.log('On va tester la cellule '+parseInt(cellule-1)+"("+parseInt(document.getElementById("cell_"+parseInt(cellule-1)).attributes["data-val"].value)+")");
+			console.log('On va tester la cellule '+parseInt(cellule+1)+"("+parseInt(document.getElementById("cell_"+parseInt(cellule+1)).attributes["data-val"].value)+")");
+
+			console.log('MAIS AUSSI');
+			console.log('On va tester la cellule '+parseInt(celluleSelected-1)+"("+parseInt(document.getElementById("cell_"+parseInt(celluleSelected-1)).attributes["data-val"].value)+")");
+			console.log('On va tester la cellule '+parseInt(celluleSelected+1)+"("+parseInt(document.getElementById("cell_"+parseInt(celluleSelected+1)).attributes["data-val"].value)+")");
+			return true;
+		}else if ((celluleSelected == cellule-1) || (celluleSelected == cellule+1)) {
 			return true;
 		}else{
 			return false;
