@@ -1,34 +1,50 @@
 <head>
 	<style type="text/css">
 	.element{
-		width:100px;
-		height:100px;
+		width:32px;
+		height:36px;
 		display:inline-block;
 	}
 
-	.vert{
-		background: #27ae60;
+	.croissant{
+		background: url('img/croissant.png');
 	}
 
-	.bleu{
-		background: #3498db;
+	.cupcake{
+		background: url('img/Cupcake.png');
 	}
 
-	.rouge{
-		background: #e74c3c;
+	.danish{
+		background: url('img/Danish.png');
 	}
 
-	.orange{
-		background: #f39c12;
+	.donut{
+		background: url('img/Donut.png');
 	}
 
-	.selected{
-		opacity: .7;
+	.macaroon{
+		background: url('img/Macaroon.png');
+	}
+
+	.sugarcookie{
+		background: url('img/SugarCookie.png');
 	}
 	</style>
 </head>
 
 <h1>Jeu !</h1>
+
+<ul>
+	<li>0 -> croissant</li>
+	<li>1 -> cupcake</li>
+	<li>2 -> danish</li>
+	<li>3 -> donut</li>
+	<li>4 -> macaroon</li>
+	<li>5 -> sugarcookie</li>
+</ul>
+
+<div id="score"></div>
+<br>
 
 
 <div id="game">
@@ -37,11 +53,68 @@
 
 <script type="text/javascript">
 	var option = [
-		'bleu',
-		'rouge',
-		'vert',
-		'orange'
+		'croissant',
+		'cupcake',
+		'danish',
+		'donut',
+		'macaroon',
+		'sugarcookie'
 	];
+
+	var option = [
+		[
+			'croissant',
+			'img/croissant.png'
+		],
+		[
+			'cupcake',
+			'img/Cupcake.png'
+		],
+		[
+			'danish',
+			'img/Danish.png'
+		],
+		[
+			'donut',
+			'img/Donut.png'
+		],
+		[
+			'macaroon',
+			'img/Macaroon.png'
+		],
+		[
+			'sugarcookie',
+			'img/SugarCookie.png'
+		]
+	];
+
+
+	var preset = [
+		1,
+		1,
+		3,
+		3,
+		5,
+		3,
+		3,
+		0,
+		1,
+		2,
+		2,
+		5,
+		4,
+		3,
+		1,
+		1,
+		4,
+		4,
+		3,
+		0
+	]
+
+	var w = 5;
+	var h = 4;
+	var points = 0;
 
 	var actualGame = [];
 
@@ -51,24 +124,33 @@
 
 
 	function startGame() {
-		var w = 7;
-		var h = 7;
+		var audio = new Audio('sounds/main.mp3');
+		audio.play();
 
-		for (var i = h - 1; i >= 0; i--) {
+		document.getElementById("score").textContent = '0';
+
+		var p = 0;
+		for (var i = h; i >= 1; i--) {
 			ligne = document.createElement("div");
 			ligne.setAttribute("id", "ligne"+i);
 
 			var data = "";
 			var actualRow = []
 
-			for (var j = h - 1; j >= 0; j--) {
+			for (var j = w; j >= 1; j--) {
 
 				// On tire la valeur de la case
-				var n = Math.floor(Math.random() * option.length);
-				var valeur = option[n];
+				if (preset.length > 0) {
+					var n = preset[p];
+				}else{
+					var n = Math.floor(Math.random() * option.length);
+				}
+				var valeur = option[n][0];
 				actualRow.push(valeur);
 
-				data = data+"<div id='cell_"+i+""+j+"' data-pos='"+i+""+j+"' data-val='"+n+"' onmousedown='selectElement("+i+""+j+")' class='element "+valeur+"'>"+valeur+"<br>ligne : "+i+"<br>cellule : "+j+"<br>"+i+""+j+"</div>";
+				// data = data+"<div id='cell_"+i+""+j+"' data-pos='"+i+""+j+"' data-val='"+n+"' onmousedown='selectElement("+i+""+j+")' class='element "+valeur+"'>"+valeur+"<br>ligne : "+i+"<br>cellule : "+j+"<br>"+i+""+j+"</div>";
+				data = data+"<div id='cell_"+i+""+j+"' data-pos='"+i+""+j+"' data-val='"+n+"' onmousedown='selectElement("+i+""+j+")' class='element "+valeur+"'><img src='"+option[n][1]+"'></div>";
+				p++
 			}
 
 			ligne.innerHTML = data;
@@ -79,7 +161,11 @@
 	}
 
 	function selectElement(cellule){
-		console.log("On a cliquer sur la cellule "+cellule);
+		console.log("On a cliqué sur la cellule "+cellule);
+
+		if (cellule < 10) {
+			cellule = "0"+cellule;
+		}
 
 
 		if (isOneCellSelected == false) {
@@ -110,22 +196,234 @@
 	}
 
 	function movementValidation(celluleSelected, cellule, valCellSelected, valCell) {
+		var posibilities = [];
 		console.log("La cellule "+celluleSelected+" vaut "+valCellSelected);
 		console.log("La cellule "+cellule+" vaut "+valCell);
-		if(celluleSelected == cellule-10 || celluleSelected == cellule+10){
-			console.log('cas 1');
-			console.log('On va tester la cellule '+parseInt(cellule-1)+"("+parseInt(document.getElementById("cell_"+parseInt(cellule-1)).attributes["data-val"].value)+")");
-			console.log('On va tester la cellule '+parseInt(cellule+1)+"("+parseInt(document.getElementById("cell_"+parseInt(cellule+1)).attributes["data-val"].value)+")");
+		caseControlCell = cellule;
 
-			console.log('MAIS AUSSI');
-			console.log('On va tester la cellule '+parseInt(celluleSelected-1)+"("+parseInt(document.getElementById("cell_"+parseInt(celluleSelected-1)).attributes["data-val"].value)+")");
-			console.log('On va tester la cellule '+parseInt(celluleSelected+1)+"("+parseInt(document.getElementById("cell_"+parseInt(celluleSelected+1)).attributes["data-val"].value)+")");
-			return true;
+		if(celluleSelected == caseControlCell-10 || celluleSelected == caseControlCell+10){
+			console.log("");
+			console.log("%cCas 1", "color: white; font-size:20px;background:black;padding:5px 5px;"); 
+			console.log("");
+			console.log("On a échangé la cellule de dessus avec celle de dessous.")
+
+			console.log("Il va falloir vérifier les cellules de la ligne "+cellule.toString().substr(0, 1)+", donc si :");
+			// verif cellule d'abord
+
+			for (var downLeft = w; downLeft >= 1; downLeft--) {
+				if (downLeft != parseInt(celluleSelected.toString().substr(1, 1))) {
+					console.log("%c» la valeur de la cellule "+celluleSelected.toString().substr(0, 1)+""+downLeft+" ("+parseInt(document.getElementById("cell_"+celluleSelected.toString().substr(0, 1)+""+downLeft).attributes["data-val"].value)+") est égale à la valeur "+valCellSelected, "padding-left:20px;");
+					if (parseInt(document.getElementById("cell_"+celluleSelected.toString().substr(0, 1)+""+downLeft).attributes["data-val"].value) == valCellSelected){
+						console.log("%c Oui", "color: green;");
+						actualCell = [celluleSelected.toString().substr(0, 1)+""+downLeft, parseInt(document.getElementById("cell_"+celluleSelected.toString().substr(0, 1)+""+downLeft).attributes["data-val"].value)];
+						posibilities.push(actualCell);
+					}else{
+						console.log("%c Nope", "color: red;");
+					}
+
+					console.log("%c» la valeur de la cellule "+cellule.toString().substr(0, 1)+""+downLeft+" ("+parseInt(document.getElementById("cell_"+cellule.toString().substr(0, 1)+""+downLeft).attributes["data-val"].value)+") est égale à la valeur "+valCellSelected, "padding-left:20px;");
+					if (parseInt(document.getElementById("cell_"+cellule.toString().substr(0, 1)+""+downLeft).attributes["data-val"].value) == valCellSelected){
+						console.log("%c Oui", "color: green;");
+						actualCell = [cellule.toString().substr(0, 1)+""+downLeft, parseInt(document.getElementById("cell_"+cellule.toString().substr(0, 1)+""+downLeft).attributes["data-val"].value)];
+						posibilities.push(actualCell);
+					}else{	
+						console.log("%c Nope", "color: red;");
+					}
+
+					console.log("");				
+					console.log("%c» la valeur de la cellule "+celluleSelected.toString().substr(0, 1)+""+downLeft+" ("+parseInt(document.getElementById("cell_"+celluleSelected.toString().substr(0, 1)+""+downLeft).attributes["data-val"].value)+") est égale à la valeur "+valCell, "padding-left:20px;");
+					if (parseInt(document.getElementById("cell_"+celluleSelected.toString().substr(0, 1)+""+downLeft).attributes["data-val"].value) == valCell){
+						console.log("%c Oui", "color: green;");
+						actualCell = [celluleSelected.toString().substr(0, 1)+""+downLeft, parseInt(document.getElementById("cell_"+celluleSelected.toString().substr(0, 1)+""+downLeft).attributes["data-val"].value)];
+						posibilities.push(actualCell);
+					}else{
+						console.log("%c Nope", "color: red;");
+					}
+
+					console.log("%c» la valeur de la cellule "+cellule.toString().substr(0, 1)+""+downLeft+" ("+parseInt(document.getElementById("cell_"+cellule.toString().substr(0, 1)+""+downLeft).attributes["data-val"].value)+") est égale à la valeur "+valCell, "padding-left:20px;");
+					if (parseInt(document.getElementById("cell_"+cellule.toString().substr(0, 1)+""+downLeft).attributes["data-val"].value) == valCell){
+						console.log("%c Oui", "color: green;");
+						actualCell = [cellule.toString().substr(0, 1)+""+downLeft, parseInt(document.getElementById("cell_"+cellule.toString().substr(0, 1)+""+downLeft).attributes["data-val"].value)];
+						posibilities.push(actualCell);
+					}else{
+						console.log("%c Nope", "color: red;");
+					}
+					console.log("");				
+					console.log("");				
+				}
+			}
+
+			console.log(posibilities);
+
+
+			// check pour cellule
+			console.log("%c RECAP : ", "color: yellow;background:black;", "celluleSelected = "+celluleSelected+" - valCellSelected = "+valCellSelected+" || cellule = "+cellule+" - valCell = "+valCell)
+			
+			for (var i = posibilities.length - 1; i >= 0; i--) {
+				console.log("On vérifie la cellule "+posibilities[i][0]);
+				if(posibilities[i][0] == cellule+1 && posibilities[i][1] == valCellSelected){
+					console.log("On a trouvé au moins deux cellules de la même couleur qui se touchent !! ");
+					var nextCell = parseInt(posibilities[i][0])+1;
+					
+					var prevCell = parseInt(posibilities[i][0])-1;
+				
+					for (var j = posibilities.length - 1; j >= 0; j--) {
+						if (posibilities[j][0] == nextCell) {
+							console.log("COMBINAISON DE TROIS !!!!");
+							moving(celluleSelected, valCellSelected, cellule, valCell);
+							// validation(cellule, posibilities[i][0], posibilities[j][0]);
+						}
+					}
+				}
+				console.log("");
+				
+			}
+
+			// check pour Selected
+			for (var i = posibilities.length - 1; i >= 0; i--) {
+				console.log("On vérifie la cellule "+posibilities[i][0]);
+				if(posibilities[i][0] == celluleSelected+1 && posibilities[i][1] == valCell){
+					console.log("On a trouvé au moins deux cellules de la même couleur qui se touchent !! ");
+				}
+				console.log("");
+				
+			}
 		}else if ((celluleSelected == cellule-1) || (celluleSelected == cellule+1)) {
-			return true;
+			console.log("");
+			console.log("%cCas 2", "color: white; font-size:20px;background:black;padding:5px 5px;"); 
+			console.log("");
+			console.log("On a échangé une cellule de droite à gauche ou de gauche à droite.")
 		}else{
 			return false;
 		}
+	}
+
+	function moving(fromCell, fromValue, toCell, toValue) {
+		console.log("On bouge et on valide "+fromValue);
+
+		document.getElementById("cell_"+fromCell).classList.remove(option[fromValue][0]);
+		document.getElementById("cell_"+fromCell).className += " "+option[toValue][0];
+		document.getElementById("cell_"+fromCell).setAttribute("data-val", toValue);
+
+		document.getElementById("cell_"+toCell).classList.remove(option[toValue][0]);
+		document.getElementById("cell_"+toCell).className += " "+option[fromValue][0];
+		document.getElementById("cell_"+toCell).setAttribute("data-val", fromValue);
+	}
+
+	function falling(type, fromCell, fromValue, toCell, toValue) {
+		if (type == 0) {
+			document.getElementById("cell_"+fromCell).classList.remove(option[fromValue][0]);
+			document.getElementById("cell_"+fromCell).setAttribute("data-val", '-1');
+
+			document.getElementById("cell_"+toCell).classList.remove(option[toValue][0]);
+			document.getElementById("cell_"+toCell).className += " "+option[fromValue][0];
+			document.getElementById("cell_"+toCell).setAttribute("data-val", fromValue);	
+		}else{
+			for (var i = w; i >= 1; i--) {
+				console.log("BONSOIR ; cell_1"+i);
+				var FirstCellValue = document.getElementById("cell_1"+i).getAttribute("data-val");
+				console.log(FirstCellValue);
+				if (FirstCellValue == "-1") {
+					var n = Math.floor(Math.random() * option.length);
+					var valeur = option[0][n];
+					document.getElementById("cell_"+i).setAttribute("data-val", n);
+					document.getElementById("cell_"+toCell).className += " "+option[n][0];
+				}
+
+			}
+		}
+	}
+
+	function validation(cell1, cell2, cell3) {
+		console.log("on va effacer : "+cell1+", "+cell2+", "+cell3);
+
+		// Remove select class to cell
+		var elements = document.getElementsByClassName('element');
+		for (var i = elements.length - 1; i >= 0; i--) {
+			elements[i].classList.remove("selected");
+		}
+
+		// Make cells fade out
+
+		// fade(document.getElementById("cell_"+cell1));
+		// fade(document.getElementById("cell_"+cell2));
+		// fade(document.getElementById("cell_"+cell3));
+
+		document.getElementById("cell_"+cell1).className += " empty";
+		document.getElementById("cell_"+cell2).className += " empty";
+		document.getElementById("cell_"+cell3).className += " empty";
+
+
+		// document.getElementById("cell_"+cell1).style.display = 'block';
+
+
+		// While there's line above, make value come down
+		var elements = document.getElementsByClassName('empty');
+		for (var i = elements.length - 1; i >= 0; i--) {
+			var emptyPos = elements[i].attributes["data-pos"].value;
+			var emptyPosVal = elements[i].attributes["data-val"].value;
+
+			console.log("La cellule "+emptyPos+" est vide");
+
+			if (emptyPos.toString().substr(0,1) != h) {
+				console.log("Ce n'est pas la première ligne donc on fait 'tomber' ");
+				var topCell = parseInt(emptyPos)+10;
+				console.log("La cellule "+emptyPos+" va prendre la valeur de la cellule "+topCell);
+
+				var topCellValue = document.getElementById("cell_"+topCell).getAttribute("data-val");
+				console.log("La cellule "+emptyPos+" va prendre la valeur ("+topCellValue+") de la cellule "+topCell);
+
+				falling(0, topCell, topCellValue, emptyPos, emptyPosVal);
+
+				document.getElementById("cell_"+emptyPos).classList.remove("empty");
+				document.getElementById("cell_"+emptyPos).style.display = "inline-block";
+				document.getElementById("cell_"+emptyPos).style.opacity = 1;
+
+			}else{
+
+			}
+			/*
+
+			for (var j = h; j >= emptyPos.toString().substr(0, 1); j--) {
+				var topCell = j+emptyPos.toString().substr(1, 1);
+				var topCellValue = document.getElementById("cell_"+topCell).attributes["data-pos"].value;
+				console.log("La cellule "+emptyPos+" va prendre la valeur ("+topCellValue+") de la cellule "+topCell);
+
+				document.getElementById("cell_"+emptyPos).style.opacity = 1;
+				document.getElementById("cell_"+emptyPos).style.display = 'block';
+				document.getElementById("cell_"+emptyPos).classList.remove("empty");
+			}
+			*/
+		}
+
+		falling(1);
+
+		// Make points higher
+		addScore(30);
+	}
+
+	function addScore(pts) {
+		points += pts;
+		document.getElementById("score").textContent = points;
+	}
+
+
+// Stackoverflow is my friend
+	function fade(element) {
+	    var op = 1;  // initial opacity
+	    var timer = setInterval(function () {
+	        if (op <= 0.1){
+	            clearInterval(timer);
+	            element.style.display = 'none';
+	        }
+	        element.style.opacity = op;
+	        element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+	        op -= op * 0.1;
+	    }, 5);
+
+	    if (element.classList.contains('selected')) {
+	    		element.classList.remove("selected");
+	    }
 	}
 
 	startGame();
